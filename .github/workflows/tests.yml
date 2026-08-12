@@ -19,7 +19,7 @@ jobs:
       matrix:
         os: [ macos-26 ]
         include:
-          - os: ubuntu-latest
+          - os: self-mac
             container:
               image: ghcr.io/homebrew/brew:main
               options: --privileged

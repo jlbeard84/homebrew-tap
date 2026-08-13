@@ -4,6 +4,7 @@ class ForgejoCli < Formula
   url "https://codeberg.org/forgejo-contrib/forgejo-cli/archive/v0.6.0.tar.gz"
   sha256 "8b91194cb1886f253261a4567ee6f83aa34b05a9637644793f88b40b7110322a"
   license any_of: ["Apache-2.0", "MIT"]
+  revision 1
 
   depends_on "rust" => :build
   depends_on "openssl@3"

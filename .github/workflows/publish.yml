@@ -57,11 +57,17 @@ jobs:
         run: |
           publish_branch="bottles/pr-$PULL_REQUEST"
           git push origin "HEAD:refs/heads/$publish_branch"
+          bottle_pr_body="$(printf '%s\n' \
+            "Publishes the bottles built and tested for #$PULL_REQUEST." \
+            "" \
+            "- Adds the generated bottle checksums to the formula." \
+            "- Uses the release assets uploaded by \`brew pr-pull\`." \
+            "- Closes #$PULL_REQUEST when this pull request is merged.")"
           bottle_pr_url="$(gh pr create \
             --base main \
             --head "$publish_branch" \
             --title "Publish bottles for #$PULL_REQUEST" \
-            --body "Publishes the bottles built and tested for #$PULL_REQUEST.")"
+            --body "$bottle_pr_body")"
           echo "Bottle pull request: $bottle_pr_url"
 
           # Events created with GITHUB_TOKEN do not start other workflows, so

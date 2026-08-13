@@ -9,6 +9,11 @@ on:
         required: true
       head_sha:
         description: Expected pull request head commit SHA (optional)
+      pull_request_already_merged:
+        description: Skip cherry-picking because the pull request is already merged
+        required: true
+        type: boolean
+        default: false
 
 permissions: {}
 
@@ -41,14 +46,21 @@ jobs:
           HOMEBREW_GIT_COMMITTER_NAME: ${{ steps.git_setup.outputs.name }}
           HOMEBREW_GIT_COMMITTER_EMAIL: ${{ steps.git_setup.outputs.email }}
           HEAD_SHA: ${{ inputs.head_sha }}
+          NO_CHERRY_PICK: ${{ inputs.pull_request_already_merged }}
           PULL_REQUEST: ${{ inputs.pull_request }}
         run: |
+          args=(--debug --tap="$GITHUB_REPOSITORY")
+          if [[ "$NO_CHERRY_PICK" == "true" ]]
+          then
+            args+=(--no-cherry-pick)
+          fi
+
           if [[ -n "$HEAD_SHA" ]]
           then
-            brew pr-pull --debug --tap="$GITHUB_REPOSITORY" --head-sha="$HEAD_SHA" "$PULL_REQUEST"
-          else
-            brew pr-pull --debug --tap="$GITHUB_REPOSITORY" "$PULL_REQUEST"
+            args+=(--head-sha="$HEAD_SHA")
           fi
+
+          brew pr-pull "${args[@]}" "$PULL_REQUEST"
 
       - name: Push commits
         uses: Homebrew/actions/git-try-push@fd832223f9f99ebf0244dd20658680e5d4aca049 # 2026.08.03.2

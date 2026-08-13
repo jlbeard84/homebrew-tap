@@ -18,7 +18,7 @@ defaults:
 
 jobs:
   pr-pull:
-    runs-on: macos-26
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       checks: read

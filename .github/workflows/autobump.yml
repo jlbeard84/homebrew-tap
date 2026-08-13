@@ -19,7 +19,7 @@ defaults:
 
 jobs:
   autobump:
-    runs-on: self-mac
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write

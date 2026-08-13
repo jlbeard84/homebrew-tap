@@ -5,8 +5,8 @@ class ForgejoCli < Formula
   sha256 "8b91194cb1886f253261a4567ee6f83aa34b05a9637644793f88b40b7110322a"
   license any_of: ["Apache-2.0", "MIT"]
 
-  depends_on "openssl@3"
   depends_on "rust" => :build
+  depends_on "openssl@3"
 
   def install
     system "cargo", "install", *std_cargo_args(path: ".")

@@ -7,9 +7,11 @@ class ForgejoCli < Formula
 
   depends_on "rust" => :build
   depends_on "openssl@3"
+  depends_on "zlib"
 
   def install
     ENV["OPENSSL_DIR"] = formula_opt_prefix("openssl@3")
+    ENV["ZLIB_ROOT"] = formula_opt_prefix("zlib")
     system "cargo", "install", *std_cargo_args(path: ".")
 
     generate_completions_from_executable(bin/"fj", "completion")

@@ -9,6 +9,7 @@ class ForgejoCli < Formula
   depends_on "openssl@3"
 
   def install
+    ENV["OPENSSL_DIR"] = formula_opt_prefix("openssl@3")
     system "cargo", "install", *std_cargo_args(path: ".")
 
     generate_completions_from_executable(bin/"fj", "completion")

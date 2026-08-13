@@ -6,6 +6,12 @@ class ForgejoCli < Formula
   license any_of: ["Apache-2.0", "MIT"]
   revision 1
 
+  bottle do
+    root_url "https://github.com/jlbeard84/homebrew-tap/releases/download/forgejo-cli-0.6.0_1"
+    sha256 cellar: :any, arm64_tahoe:  "dfbecbf67fe6a2a85afb6fb96f0f96adbfb5a8be28b0ed2282303e891752e94e"
+    sha256 cellar: :any, x86_64_linux: "78f944920f2b6ee3aa7458275600fe3aebc57178d92555f766fb80d9aec82bd4"
+  end
+
   depends_on "rust" => :build
   depends_on "openssl@3"
   depends_on "zlib"

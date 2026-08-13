@@ -17,7 +17,7 @@ jobs:
   test-bot:
     strategy:
       matrix:
-        os: [ macos-26 ]
+        os: [ self-mac ]
         include:
           - os: self-mac
             container:

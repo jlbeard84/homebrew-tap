@@ -17,9 +17,9 @@ jobs:
   test-bot:
     strategy:
       matrix:
-        os: [ self-mac ]
+        os: [ macos-26 ]
         include:
-          - os: self-mac
+          - os: macos-26
             container:
               image: ghcr.io/homebrew/brew:main
               options: --privileged

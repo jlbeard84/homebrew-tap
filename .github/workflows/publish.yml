@@ -18,7 +18,7 @@ defaults:
 
 jobs:
   pr-pull:
-    runs-on: self-mac
+    runs-on: macos-26
     permissions:
       actions: read
       checks: read

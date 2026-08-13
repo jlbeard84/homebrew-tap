@@ -9,11 +9,6 @@ on:
         required: true
       head_sha:
         description: Expected pull request head commit SHA (optional)
-      pull_request_already_merged:
-        description: Skip cherry-picking because the pull request is already merged
-        required: true
-        type: boolean
-        default: false
 
 permissions: {}
 
@@ -25,7 +20,7 @@ jobs:
   pr-pull:
     runs-on: ubuntu-latest
     permissions:
-      actions: read
+      actions: write
       checks: read
       contents: write
       issues: read
@@ -46,23 +41,29 @@ jobs:
           HOMEBREW_GIT_COMMITTER_NAME: ${{ steps.git_setup.outputs.name }}
           HOMEBREW_GIT_COMMITTER_EMAIL: ${{ steps.git_setup.outputs.email }}
           HEAD_SHA: ${{ inputs.head_sha }}
-          NO_CHERRY_PICK: ${{ inputs.pull_request_already_merged }}
           PULL_REQUEST: ${{ inputs.pull_request }}
         run: |
-          args=(--debug --tap="$GITHUB_REPOSITORY")
-          if [[ "$NO_CHERRY_PICK" == "true" ]]
-          then
-            args+=(--no-cherry-pick)
-          fi
-
           if [[ -n "$HEAD_SHA" ]]
           then
-            args+=(--head-sha="$HEAD_SHA")
+            brew pr-pull --debug --tap="$GITHUB_REPOSITORY" --head-sha="$HEAD_SHA" "$PULL_REQUEST"
+          else
+            brew pr-pull --debug --tap="$GITHUB_REPOSITORY" "$PULL_REQUEST"
           fi
 
-          brew pr-pull "${args[@]}" "$PULL_REQUEST"
+      - name: Open bottle pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST: ${{ inputs.pull_request }}
+        run: |
+          publish_branch="bottles/pr-$PULL_REQUEST"
+          git push origin "HEAD:refs/heads/$publish_branch"
+          bottle_pr_url="$(gh pr create \
+            --base main \
+            --head "$publish_branch" \
+            --title "Publish bottles for #$PULL_REQUEST" \
+            --body "Publishes the bottles built and tested for #$PULL_REQUEST.")"
+          echo "Bottle pull request: $bottle_pr_url"
 
-      - name: Push commits
-        uses: Homebrew/actions/git-try-push@c8707045ccae42888fe98e86f2ee8938bc7cc193 # 2026.08.10.1
-        with:
-          branch: main
+          # Events created with GITHUB_TOKEN do not start other workflows, so
+          # explicitly run the required checks against the generated branch.
+          gh workflow run tests.yml --ref "$publish_branch"
